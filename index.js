@@ -17,12 +17,12 @@ export default () => {
   const form = document.querySelector('.rss-form');
   const feedBackEl = document.querySelector('.feedback');
 
-  const watchedState = onChange(state, (path, currentValue, previousValue) => {
-    if (path === form.error) {
+  const watchedState = onChange(state, (path, currentValue) => {
+    if (path === 'form.error') {
       feedBackEl.textContent = currentValue;
     }
 
-    if (path === form.isValid) {
+    if (path === 'form.isValid') {
       if (state.form.isValid === false) {
         input.classList.add('is-invalid');
       } else {
@@ -36,10 +36,11 @@ export default () => {
     const formData = new FormData(e.target);
     const url = formData.get('url');
     schema.validate(url)
-      .then(validUrl => {
+      .then(() => {
         watchedState.form.isValid = true;
+        watchedState.form.error = '';
       })
-      .catch(error => {
+      .catch((error) => {
         watchedState.form.error = error.message;
         watchedState.form.isValid = false;
       })
