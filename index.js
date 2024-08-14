@@ -1,5 +1,22 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
+import i18next from 'i18next';
+import ru from './locales/ru.js';
+
+const i18nInstance  = i18next.createInstance();
+i18nInstance.init({
+  lng: 'ru',
+  debug: true,
+  resources: {
+    ru,
+  },
+});
+
+yup.setLocale({
+  string: {
+    url: i18nInstance.t('invalidURL'), 
+  },
+});
 
 let schema = yup.string().url('Ссылка должна быть валидным URL');
 
@@ -7,8 +24,6 @@ export default () => {
   const state = {
     form: {
       isValid: true,
-      alreadyExist: false,
-      containsValidRss: true,
       error: '',
     },
   };
@@ -40,8 +55,8 @@ export default () => {
         watchedState.form.isValid = true;
         watchedState.form.error = '';
       })
-      .catch((error) => {
-        watchedState.form.error = error.message;
+      .catch(() => {
+        watchedState.form.error = i18nInstance.t('invalidURL');
         watchedState.form.isValid = false;
       })
   });
