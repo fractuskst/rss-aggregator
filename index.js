@@ -28,6 +28,11 @@ export default () => {
     posts: [],
     feeds: [],
 
+    modalWindow: {
+      active: false,
+      dataId: '',
+    },
+
     addedUrls: [],
 
     form: {
@@ -51,6 +56,9 @@ export default () => {
   const feedBackEl = document.querySelector('.feedback');
   const feedsDiv = document.querySelector('.feeds');
   const postsDiv = document.querySelector('.posts');
+  const modalTitle = document.querySelector('.modal-title');
+  const modalBody = document.querySelector('.modal-body');
+  const modalLinkButton = document.querySelector('a.full-article');
 
   const watchedState = onChange(state, (path, currentValue) => {
     if (path === 'form.feedback.success') {
@@ -96,6 +104,13 @@ export default () => {
         list.appendChild(li);
       });
     }
+
+    if (path === 'modalWindow.active') {
+      const currentPost = state.posts.find((post) => post.id === state.modalWindow.dataId);
+      modalTitle.textContent = currentPost.title;
+      modalBody.textContent = currentPost.description;
+      modalLinkButton.setAttribute('href', currentPost.link);
+    }
   });
 
   form.addEventListener('submit', (e) => {
@@ -113,7 +128,6 @@ export default () => {
       })
       .then((response) => {
         const parsedData = parseDOM(response.data.contents);
-          console.log(parsedData)
           const errorNode = parsedData.querySelector('parsererror');
           if (errorNode) {
             watchedState.form.feedback.errors = i18nInstance.t('errors.notContainRSS');
@@ -141,6 +155,14 @@ export default () => {
             link: postLink.textContent,
           })
         });
+        const viewButtons = document.querySelectorAll('[data-bs-toggle="modal"]');
+        viewButtons.forEach((button) => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            watchedState.modalWindow.active = true;
+            watchedState.modalWindow.dataId = 1;
+          });
+        });    
       })
       .catch((err) => {
         watchedState.form.isValid = false;
@@ -153,4 +175,5 @@ export default () => {
         }
       });
   });
+  
 };
