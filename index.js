@@ -34,18 +34,15 @@ export default () => {
     form: {
       isValid: true,
       status: 'filling', // filling, sending
-      feedback: {
-        errors: '',
-        success: '',
-      },
-    },
+      feedback: '',
+    }
   };
 
   const validateUrl = (url) => {
     const schema = yup.string()
       .url(i18nInstance.t('errors.invalidURL'))
       .notOneOf(state.addedUrls, i18nInstance.t('errors.alreadyExist'))
-      .required();
+      .required(i18nInstance.t('errors.required'));
     return schema.validate(url);
   };
 
@@ -57,6 +54,7 @@ export default () => {
     feedBackEl.textContent = message;
     feedBackEl.classList.toggle('text-danger', type === 'error');
     feedBackEl.classList.toggle('text-success', type === 'success');
+
   };
 
   const watchedState = onChange(state, (path, currentValue) => {
@@ -69,12 +67,12 @@ export default () => {
       }
     }
 
-    if (path === 'form.feedback.success') {
-      updateFeedback('success', currentValue);
-    }
-
-    if (path === 'form.feedback.errors') {
-      updateFeedback('error', currentValue);
+    if (path === 'form.feedback') {
+      if (currentValue === i18nInstance.t('success')) {
+        updateFeedback('success', currentValue);
+      } else {
+        updateFeedback('error', currentValue);
+      }
     }
 
     if (path === 'form.isValid') {
@@ -163,8 +161,7 @@ export default () => {
 
     validateUrl(url)
       .then((validUrl) => {
-        watchedState.form.feedback.errors = '';
-        watchedState.form.feedback.success = '';
+        watchedState.form.feedback = '';
         watchedState.form.isValid = true;
         watchedState.form.status = 'sending';
         return axios.get(`${routes.allOrigins()}${validUrl}`, { timeout: 10000 });
@@ -173,10 +170,11 @@ export default () => {
         const parsedData = parseDOM(response.data.contents);
           const errorNode = parsedData.querySelector('parsererror');
           if (errorNode) {
-            watchedState.form.feedback.errors = i18nInstance.t('errors.notContainRSS');
+            watchedState.form.feedback = i18nInstance.t('errors.notContainRSS');
+            return;
           } else {
             watchedState.addedUrls.push(url);
-            watchedState.form.feedback.success = i18nInstance.t('success')
+            watchedState.form.feedback = i18nInstance.t('success');
           }
 
         const feedtitle = parsedData.querySelector('title');
@@ -211,10 +209,10 @@ export default () => {
         watchedState.form.isValid = false;
         if (axios.isAxiosError(err)) {
           if (err.request) {
-            watchedState.form.feedback.errors = i18nInstance.t('errors.networkError');
+            watchedState.form.feedback = i18nInstance.t('errors.networkError');
           }
         } else {
-          watchedState.form.feedback.errors = err.message;
+          watchedState.form.feedback = err.message;
         }
         watchedState.form.status = 'filling';
       });
