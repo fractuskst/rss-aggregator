@@ -54,7 +54,6 @@ export default () => {
     feedBackEl.textContent = message;
     feedBackEl.classList.toggle('text-danger', type === 'error');
     feedBackEl.classList.toggle('text-success', type === 'success');
-
   };
 
   const watchedState = onChange(state, (path, currentValue) => {
