@@ -129,30 +129,29 @@ export default () => {
   const checkForNewPosts = () => {
     const promises = state.addedUrls.map((url) => axios
       .get(`${routes.allOrigins()}${url}`, { timeout: 10000 })
-        .then((response) => {
-          const parsedData = parseDOM(response.data.contents);
-          const posts = parsedData.querySelectorAll('item');
-          const newPostsArray = [];
-          posts.forEach((post) => {
-            const postTitle = post.querySelector('title').textContent;
-            const postDescription = post.querySelector('description').textContent;
-            const postLink = post.querySelector('link').textContent;
-            const postId = post.querySelector('guid') ? post.querySelector('guid').textContent : postLink;
-            if (!_.some(state.posts, ['id', postId])) {
-              newPostsArray.push({
-                id: postId,
-                title: postTitle,
-                description: postDescription,
-                link: postLink,
-              });
-            }
-          });
-          watchedState.posts.unshift(...newPostsArray);
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-    );
+      .then((response) => {
+        const parsedData = parseDOM(response.data.contents);
+        const posts = parsedData.querySelectorAll('item');
+        const newPostsArray = [];
+        posts.forEach((post) => {
+          const postTitle = post.querySelector('title').textContent;
+          const postDescription = post.querySelector('description').textContent;
+          const postLink = post.querySelector('link').textContent;
+          const postId = post.querySelector('guid') ? post.querySelector('guid').textContent : postLink;
+          if (!_.some(state.posts, ['id', postId])) {
+            newPostsArray.push({
+              id: postId,
+              title: postTitle,
+              description: postDescription,
+              link: postLink,
+            });
+          }
+        });
+        watchedState.posts.unshift(...newPostsArray);
+      })
+      .catch((err) => {
+        console.error(err);
+      }));
     Promise.all(promises).finally(() => {
       setTimeout(checkForNewPosts, 5000);
     });
@@ -176,7 +175,7 @@ export default () => {
         if (errorNode) {
           watchedState.form.feedback = i18nInstance.t('errors.notContainRSS');
           return;
-        } 
+        }
         watchedState.addedUrls.push(url);
         watchedState.form.feedback = i18nInstance.t('success');
 
