@@ -127,8 +127,8 @@ export default () => {
   });
 
   const checkForNewPosts = () => {
-    const promises = state.addedUrls.map((url) => {
-      return axios.get(`${routes.allOrigins()}${url}`, { timeout: 10000 })
+    const promises = state.addedUrls.map((url) => axios
+      .get(`${routes.allOrigins()}${url}`, { timeout: 10000 })
         .then((response) => {
           const parsedData = parseDOM(response.data.contents);
           const posts = parsedData.querySelectorAll('item');
@@ -152,11 +152,11 @@ export default () => {
         .catch((err) => {
           console.error(err);
         })
-      });
-      Promise.all(promises).finally(() => {
-        setTimeout(checkForNewPosts, 5000);
-      });
-    };
+    );
+    Promise.all(promises).finally(() => {
+      setTimeout(checkForNewPosts, 5000);
+    });
+  };
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -176,10 +176,9 @@ export default () => {
         if (errorNode) {
           watchedState.form.feedback = i18nInstance.t('errors.notContainRSS');
           return;
-        } else {
-          watchedState.addedUrls.push(url);
-          watchedState.form.feedback = i18nInstance.t('success');
-        }
+        } 
+        watchedState.addedUrls.push(url);
+        watchedState.form.feedback = i18nInstance.t('success');
 
         const feedtitle = parsedData.querySelector('title');
         const feedDescription = parsedData.querySelector('description');
