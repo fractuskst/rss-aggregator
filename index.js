@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
 import i18next from 'i18next';
-import ru from './locales/ru.js';
 import axios from 'axios';
 import _ from 'lodash';
+import ru from './locales/ru.js';
 
 const parseDOM = (data) => {
   const parser = new DOMParser();
@@ -35,7 +35,7 @@ export default () => {
       isValid: true,
       status: 'filling', // filling, sending
       feedback: '',
-    }
+    },
   };
 
   const validateUrl = (url) => {
@@ -90,7 +90,7 @@ export default () => {
         li.innerHTML = `<h3 class="h6 m-0">${feed.title}</h3>
         <p class="m-0 small text-black-50">${feed.description}</p>`;
         list.appendChild(li);
-      })
+      });
     }
 
     if (path === 'posts') {
@@ -127,8 +127,8 @@ export default () => {
   });
 
   const checkForNewPosts = () => {
-    const promises = state.addedUrls.map((url) => 
-      axios.get(`${routes.allOrigins()}${url}`, { timeout: 10000 })
+    const promises = state.addedUrls.map((url) => {
+      return axios.get(`${routes.allOrigins()}${url}`, { timeout: 10000 })
         .then((response) => {
           const parsedData = parseDOM(response.data.contents);
           const posts = parsedData.querySelectorAll('item');
@@ -139,7 +139,12 @@ export default () => {
             const postLink = post.querySelector('link').textContent;
             const postId = post.querySelector('guid') ? post.querySelector('guid').textContent : postLink;
             if (!_.some(state.posts, ['id', postId])) {
-              newPostsArray.push({ id: postId, title: postTitle, description: postDescription, link: postLink });
+              newPostsArray.push({
+                id: postId,
+                title: postTitle,
+                description: postDescription,
+                link: postLink,
+              });
             }
           });
           watchedState.posts.unshift(...newPostsArray);
@@ -147,7 +152,7 @@ export default () => {
         .catch((err) => {
           console.error(err);
         })
-      );
+      });
       Promise.all(promises).finally(() => {
         setTimeout(checkForNewPosts, 5000);
       });
@@ -167,19 +172,19 @@ export default () => {
       })
       .then((response) => {
         const parsedData = parseDOM(response.data.contents);
-          const errorNode = parsedData.querySelector('parsererror');
-          if (errorNode) {
-            watchedState.form.feedback = i18nInstance.t('errors.notContainRSS');
-            return;
-          } else {
-            watchedState.addedUrls.push(url);
-            watchedState.form.feedback = i18nInstance.t('success');
-          }
+        const errorNode = parsedData.querySelector('parsererror');
+        if (errorNode) {
+          watchedState.form.feedback = i18nInstance.t('errors.notContainRSS');
+          return;
+        } else {
+          watchedState.addedUrls.push(url);
+          watchedState.form.feedback = i18nInstance.t('success');
+        }
 
         const feedtitle = parsedData.querySelector('title');
         const feedDescription = parsedData.querySelector('description');
         watchedState.feeds.unshift({
-          title: feedtitle.textContent, 
+          title: feedtitle.textContent,
           description: feedDescription.textContent,
         });
 
@@ -195,7 +200,7 @@ export default () => {
             title: postTitle,
             description: postDescription,
             link: postLink,
-          })
+          });
         });
         postsArray.reverse();
         watchedState.posts.unshift(...postsArray);
@@ -230,5 +235,5 @@ export default () => {
       const linkId = link.getAttribute('data-id');
       watchedState.visitedLinks.push(linkId);
     });
-  })
+  });
 };
