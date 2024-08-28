@@ -1,25 +1,25 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-import path from "path";
-import { fileURLToPath } from "url";
-import HtmlWebpackPlugin from "html-webpack-plugin";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export default {
-  mode: process.env.NODE_ENV || "development",
-  entry: "./src/index.js",
+  mode: process.env.NODE_ENV || 'development',
+  entry: './src/index.js',
   output: {
-    path: path.resolve(dirname, "dist"),
+    path: path.resolve(dirname, 'dist'),
   },
   devServer: {
     open: true,
-    host: "localhost",
+    host: 'localhost',
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "index.html",
+      template: 'index.html',
     }),
 
     // Add your plugins here
@@ -31,22 +31,22 @@ export default {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env"],
+            presets: ['@babel/preset-env'],
           },
         },
       },
-      { test: /\.css$/, use: ["style-loader", "css-loader", "postcss-loader"] },
+      { test: /\.css$/, use: ['style-loader', 'css-loader', 'postcss-loader'] },
       {
         test: /\.scss$/,
         use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader",
-          "postcss-loader",
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+          'postcss-loader',
           {
-            loader: "sass-loader",
+            loader: 'sass-loader',
             options: {
               sassOptions: {
                 quietDeps: true,
@@ -57,11 +57,11 @@ export default {
       },
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: "url-loader?limit=10000",
+        use: 'url-loader?limit=10000',
       },
       {
         test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-        use: "file-loader",
+        use: 'file-loader',
       },
     ],
   },
